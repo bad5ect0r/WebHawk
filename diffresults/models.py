@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from django.conf import settings
+from django.utils import timezone
 
 from urllib.parse import urlparse
 
@@ -104,7 +105,7 @@ class Url(models.Model):
     def get_full_filepath(self):
         return settings.GIT_DIR / self.get_full_filename()
 
-    def fetch(self):
+    def do_request(self):
         headers = self.get_headers()
         resp = requests.request(self.method, self.full_url, data=self.body, headers=headers)
 
@@ -113,6 +114,14 @@ class Url(models.Model):
     def save_into_file(self, data):
         with open(self.get_full_filepath(), 'wb') as fwrite:
             fwrite.write(data)
+
+    def fetch(self):
+        resp = self.do_request()
+        self.save_into_file(resp.content)
+        self.last_fetched_date = timezone.now()
+        self.save()
+
+        return resp
 
 
 class Header(models.Model):
