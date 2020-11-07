@@ -23,13 +23,12 @@ Next, you need to create a .env file. To do this, you can copy the .env.example 
 Finally, you need to run migrations by doing
 
 ```
-$ python3 manage.py migrate diffresults
+$ python3 manage.py migrate
 ```
 
-You should also create migrations for the admin app:
+You should also add a new superuser:
 
 ```
-$ python3 manage.py migrate admin
 $ python3 manage.py createsuperuser
 ```
 
