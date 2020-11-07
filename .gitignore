@@ -1,6 +1,9 @@
 # Ignore .env files.
 .env
 
+# Ignore Vim .swp files
+*.swp
+
 # Other files I got from somewhere on the Internet.
 # Django #
 *.log
