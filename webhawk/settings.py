@@ -125,5 +125,5 @@ STATIC_URL = '/static/'
 
 # Custom Settings
 # Git directory to store fetched urls.
-GIT_DIR = config('GIT_DIR')
+GIT_DIR = BASE_DIR / config('GIT_DIR')
 
