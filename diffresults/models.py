@@ -110,6 +110,10 @@ class Url(models.Model):
 
         return resp
 
+    def save_into_file(self, data):
+        with open(self.get_full_filepath(), 'wb') as fwrite:
+            fwrite.write(data)
+
 
 class Header(models.Model):
     url = models.ForeignKey(Url, on_delete=models.CASCADE)
