@@ -1,0 +1,12 @@
+<html>
+	<body>
+		<h1>{{ project.project_name }}</h1>
+		<ul>
+			{% for url in urls %}
+			<li>
+				<a href="{% url 'diffresults:fetch' url.id %}">{{ url.url_name }} ({{ url.full_url }})</a>
+			</li>
+			{% endfor %}
+		</ul>
+	</body>
+</html>

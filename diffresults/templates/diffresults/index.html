@@ -1,0 +1,12 @@
+<html>
+	<body>
+		<h1>Projects</h1>
+		<ul>
+			{% for project in projects %}
+			<li>
+				<a href="{% url 'diffresults:project' project.id %}">{{ project.project_name }}</a>
+			</li>
+			{% endfor %}
+		</ul>
+	</body>
+</html>

@@ -1,0 +1,33 @@
+{% extends 'admin/base.html' %}
+
+{% block content %}
+<h1>Import Error</h1>
+<p>The following URLs could not be imported since they do not satisfy the backend validator.</p>
+<table>
+    <tr>
+        <th>Line number</th>
+        <th>Line</th>
+        <th>Error(s)</th>
+    </tr>
+    {% for url in bad_line_urls %}
+    <tr>
+        <td>
+            {{ url.0 }}
+        </td>
+        <td> 
+            <pre style="color:red">
+                {{ url.1 }}
+            </pre>
+        </td>
+		<td>
+			{% for field, error in url.2 %}
+			{{ field }}: {{ error }} <br>
+			{% endfor %}
+		</td>
+    </tr>
+    {% endfor %}
+</pre>
+</table>
+<br />
+{% endblock %}
+
