@@ -4,6 +4,9 @@
 # Ignore Vim .swp files
 *.swp
 
+# Ignore GitDir
+GitDir
+
 # Other files I got from somewhere on the Internet.
 # Django #
 *.log
