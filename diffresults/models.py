@@ -1,11 +1,13 @@
 from django.db import models
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
+from django.conf import settings
 
 from urllib.parse import urlparse
 
 import requests
 import datetime
+import uuid
 
 
 class Project(models.Model):
@@ -64,12 +66,20 @@ class Url(models.Model):
         (ONE_MINUTE, 'Every minute')
     }
 
+    FILE_EXTENSIONS = {
+        ('js', 'js'),
+        ('html', 'html'),
+        ('xml', 'xml'),
+    }
+
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     url_name = models.CharField('name', max_length=256)
     method = models.CharField('http method', max_length=256, default='GET')
     full_url = models.CharField(max_length=2048, validators=[URLValidator(['http', 'https'])])
     body = models.TextField('request body', blank=True, default='')
     fetch_frequency = models.DurationField('fetch frequency', choices=FETCH_FREQUENCIES, default=DAILY)
+    filename = models.UUIDField('filename', editable=False, default=uuid.uuid4)
+    file_ext = models.CharField('file extension', choices=FILE_EXTENSIONS, max_length=16, default='txt')
     add_date = models.DateTimeField('date added', auto_now_add=True)
     last_fetched_date = models.DateTimeField('date last fetched', null=True, editable=False)
 
@@ -87,6 +97,12 @@ class Url(models.Model):
             headers[header.header_name] = header.header_value
 
         return headers
+
+    def get_full_filename(self):
+        return '{}.{}'.format(self.filename, self.file_ext)
+
+    def get_full_filepath(self):
+        return settings.GIT_DIR / self.get_full_filename()
 
     def fetch(self):
         headers = self.get_headers()
