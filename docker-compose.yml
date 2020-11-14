@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+    webhawk:
+        build: .
+        container_name: webhawk
+        volumes:
+            - static_volume:/static
+        expose:
+            - 8000
+    nginx:
+        image: nginx:1.19
+        container_name: nginx
+        ports:
+            - 80:80
+        volumes:
+            - ./conf/nginx:/etc/nginx/conf.d
+            - static_volume:/static
+        depends_on:
+            - webhawk
+
+volumes:
+    static_volume:
+
