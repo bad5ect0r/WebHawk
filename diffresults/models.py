@@ -4,6 +4,8 @@ from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.utils import timezone
 
+from . import utils
+
 from urllib.parse import urlparse
 
 import requests
@@ -103,7 +105,10 @@ class Url(models.Model):
         return '{}.{}'.format(self.filename, self.file_ext)
 
     def get_full_filepath(self):
-        return settings.GIT_DIR / self.get_full_filename()
+        dir_path = settings.GIT_DIR / str(self.project.id)
+        utils.create_gitdir(dir_path)
+
+        return dir_path / self.get_full_filename()
 
     def do_request(self):
         headers = self.get_headers()
