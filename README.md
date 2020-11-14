@@ -40,3 +40,11 @@ $ python3 manage.py runserver
 
 Let me know if you have any issues.
 
+### Docker
+
+The Dockerfile and docker-compose.yml file is designed to run the Django app in production. Make sure you edit the .env file where appropriate and then run the following command:
+
+```
+$ docker-compose up -d --build
+```
+
