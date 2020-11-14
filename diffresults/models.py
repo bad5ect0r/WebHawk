@@ -7,6 +7,7 @@ from django.utils import timezone
 from . import utils
 
 from urllib.parse import urlparse
+from pathlib import PosixPath
 
 import requests
 import datetime
@@ -16,9 +17,16 @@ import uuid
 class Project(models.Model):
     project_name = models.CharField('name', max_length=256)
     create_date = models.DateTimeField('date created', auto_now_add=True)
+    git_dir = models.FilePathField('git directory', path=str(settings.GIT_DIR), editable=False)
     
     def __str__(self):
         return self.project_name
+
+    def save(self, *args, **kwargs):
+        self.git_dir = settings.GIT_DIR / str(uuid.uuid4())
+        utils.create_gitdir(self.git_dir)
+
+        return super().save(*args, **kwargs)
 
     def import_urls_from_file(self, uploaded_file):
         bad_line_urls = []
@@ -105,10 +113,7 @@ class Url(models.Model):
         return '{}.{}'.format(self.filename, self.file_ext)
 
     def get_full_filepath(self):
-        dir_path = settings.GIT_DIR / str(self.project.id)
-        utils.create_gitdir(dir_path)
-
-        return dir_path / self.get_full_filename()
+        return PosixPath(self.project.git_dir) / self.get_full_filename()
 
     def do_request(self):
         headers = self.get_headers()
