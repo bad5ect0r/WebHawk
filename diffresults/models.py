@@ -23,8 +23,9 @@ class Project(models.Model):
         return self.project_name
 
     def save(self, *args, **kwargs):
-        self.git_dir = settings.GIT_DIR / str(uuid.uuid4())
-        utils.create_gitdir(self.git_dir)
+        if self._state.adding:
+            self.git_dir = settings.GIT_DIR / str(uuid.uuid4())
+            utils.create_gitdir(self.git_dir)
 
         return super().save(*args, **kwargs)
 
