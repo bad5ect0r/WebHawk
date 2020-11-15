@@ -1,0 +1,15 @@
+FROM python:3.8.5
+ENV PYTHONUNBUFFERED=1
+ENV STATIC_ROOT=/static
+ENV DEBUG=False
+RUN mkdir /code
+RUN mkdir /static
+COPY . /code
+WORKDIR /code
+RUN pip install -r requirements.txt
+RUN python manage.py migrate
+RUN pip install gunicorn
+RUN python manage.py collectstatic --no-input
+EXPOSE 8000
+CMD gunicorn --bind 0.0.0.0:8000 webhawk.wsgi
+

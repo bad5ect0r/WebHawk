@@ -25,11 +25,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECRET_KEY = '_97m_fd&o-jk!!9tctipp^tzqcfafwyl)^2wv(p@=4@-f-tm6d'
 SECRET_KEY = config('SECRET_KEY')
 
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', cast=bool)
-
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=lambda x: [h.strip() for h in x.split(' ')])
 
 # Application definition
 
@@ -122,8 +121,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = config('STATIC_ROOT', default=None)
+
+if len(STATIC_ROOT) == 0:
+    STATIC_ROOT = None
 
 # Custom Settings
 # Git directory to store fetched urls.
 GIT_DIR = BASE_DIR / config('GIT_DIR')
+
+# Set CSRF_COOKIE and SESSION_COOKIE as secure when in Prod.
+CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', cast=bool)
+SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', cast=bool)
 
