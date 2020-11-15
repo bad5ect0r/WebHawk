@@ -19,7 +19,7 @@ class Project(models.Model):
     project_name = models.CharField('name', max_length=256)
     create_date = models.DateTimeField('date created', auto_now_add=True)
     git_dir = models.FilePathField('git directory', path=str(settings.GIT_DIR), editable=False)
-    
+
     def __str__(self):
         return self.project_name
 
@@ -101,7 +101,7 @@ class Url(models.Model):
 
     def __str__(self):
         return self.full_url
-    
+
     def domain(self):
         url_parsed = urlparse(self.full_url)
         return url_parsed.hostname
@@ -179,4 +179,3 @@ class Header(models.Model):
 
     def __str__(self):
         return self.header_name + ': ' + self.header_value
-

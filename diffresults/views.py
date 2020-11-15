@@ -29,5 +29,3 @@ def fetch(request, url_id):
         'full_request': resp.request,
         'response_text': resp.text
     })
-
-
