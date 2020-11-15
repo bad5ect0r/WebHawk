@@ -1,19 +1,37 @@
 from django.db import models
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
+from django.conf import settings
+from django.utils import timezone
+
+from . import utils
 
 from urllib.parse import urlparse
+from pathlib import PosixPath
+from git import Repo
 
 import requests
 import datetime
+import uuid
 
 
 class Project(models.Model):
     project_name = models.CharField('name', max_length=256)
     create_date = models.DateTimeField('date created', auto_now_add=True)
+    git_dir = models.FilePathField('git directory', path=str(settings.GIT_DIR), editable=False)
 
     def __str__(self):
         return self.project_name
+
+    def save(self, *args, **kwargs):
+        if self._state.adding:
+            self.git_dir = settings.GIT_DIR / str(uuid.uuid4())
+            utils.create_gitdir(self.git_dir)
+
+        return super().save(*args, **kwargs)
+
+    def get_repo(self):
+        return Repo(self.git_dir)
 
     def import_urls_from_file(self, uploaded_file):
         bad_line_urls = []
@@ -64,12 +82,20 @@ class Url(models.Model):
         (ONE_MINUTE, 'Every minute')
     }
 
+    FILE_EXTENSIONS = {
+        ('js', 'js'),
+        ('html', 'html'),
+        ('xml', 'xml'),
+    }
+
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     url_name = models.CharField('name', max_length=256)
     method = models.CharField('http method', max_length=256, default='GET')
     full_url = models.CharField(max_length=2048, validators=[URLValidator(['http', 'https'])])
     body = models.TextField('request body', blank=True, default='')
     fetch_frequency = models.DurationField('fetch frequency', choices=FETCH_FREQUENCIES, default=DAILY)
+    filename = models.UUIDField('filename', editable=False, default=uuid.uuid4)
+    file_ext = models.CharField('file extension', choices=FILE_EXTENSIONS, max_length=16, default='txt')
     add_date = models.DateTimeField('date added', auto_now_add=True)
     last_fetched_date = models.DateTimeField('date last fetched', null=True, editable=False)
 
@@ -88,9 +114,59 @@ class Url(models.Model):
 
         return headers
 
-    def fetch(self):
+    def get_full_filename(self):
+        return '{}.{}'.format(self.filename, self.file_ext)
+
+    def get_full_filepath(self):
+        return PosixPath(self.project.git_dir) / self.get_full_filename()
+
+    def do_request(self):
         headers = self.get_headers()
         resp = requests.request(self.method, self.full_url, data=self.body, headers=headers)
+
+        return resp
+
+    def save_into_file(self, data):
+        with open(self.get_full_filepath(), 'wb') as fwrite:
+            fwrite.write(data)
+
+    def is_file_untracked(self):
+        repo = self.project.get_repo()
+
+        return self.get_full_filename() in repo.untracked_files
+
+    def is_file_different(self):
+        if self.is_file_untracked():
+            return True
+
+        repo = self.project.get_repo()
+
+        for diff in repo.index.diff(None):
+            if diff.a_path == self.get_full_filename():
+                return True
+
+        return False
+
+    def commit(self, commit_msg):
+        repo = self.project.get_repo()
+        repo.index.add([self.get_full_filename()])
+        repo.index.commit(commit_msg)
+
+    def fetch(self):
+        resp = self.do_request()
+        self.save_into_file(resp.content)
+        fetch_date = timezone.now()
+
+        if self.is_file_untracked():
+            commit_msg = 'New URL ({}) is now being tracked'.format(self.url_name)
+            self.commit(commit_msg)
+            self.last_fetched_date = fetch_date
+            self.save()
+        elif self.is_file_different():
+            commit_msg = 'Change detected on {} at {}'.format(self.url_name, fetch_date)
+            self.commit(commit_msg)
+            self.last_fetched_date = fetch_date
+            self.save()
 
         return resp
 

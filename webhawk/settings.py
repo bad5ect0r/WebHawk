@@ -128,7 +128,7 @@ if len(STATIC_ROOT) == 0:
 
 # Custom Settings
 # Git directory to store fetched urls.
-GIT_DIR = config('GIT_DIR')
+GIT_DIR = BASE_DIR / config('GIT_DIR')
 
 # Set CSRF_COOKIE and SESSION_COOKIE as secure when in Prod.
 CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', cast=bool)
