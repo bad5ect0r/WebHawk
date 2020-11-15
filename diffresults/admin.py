@@ -1,12 +1,8 @@
 from django import forms
 from django.contrib import admin, messages
 from django.urls import path, reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
-from django.core.validators import URLValidator
-from django.core.exceptions import ValidationError
-
-from urllib.parse import urlparse
 
 from . import models
 
@@ -52,15 +48,18 @@ class UrlAdmin(admin.ModelAdmin):
         return my_urls + urls
 
     def file_import(self, request):
-        if (request.method == 'POST' and
-            'uploaded_file' in request.FILES and
-            'project' in request.POST):
+        is_upload = request.method == 'POST' \
+            and 'uploaded_file' in request.FILES \
+            and 'project' in request.POST
+
+        if is_upload:
             uploaded_file = request.FILES['uploaded_file']
             project = get_object_or_404(models.Project, pk=int(request.POST['project']))
             bad_line_urls = project.import_urls_from_file(uploaded_file)
 
             if len(bad_line_urls) > 0:
-                return render(request,
+                return render(
+                    request,
                     'admin/url_import_fail.html',
                     {
                         'bad_line_urls': bad_line_urls,
@@ -86,4 +85,3 @@ admin.site.register(models.Project, ProjectAdmin)
 admin.site.register(models.Url, UrlAdmin)
 admin.site.site_header = 'WebHawk Admin'
 admin.site.site_title = 'WebHawk Admin'
-
