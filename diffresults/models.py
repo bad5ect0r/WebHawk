@@ -8,6 +8,7 @@ from . import utils
 
 from urllib.parse import urlparse
 from pathlib import PosixPath
+from git import Repo
 
 import requests
 import datetime
@@ -28,6 +29,9 @@ class Project(models.Model):
             utils.create_gitdir(self.git_dir)
 
         return super().save(*args, **kwargs)
+
+    def get_repo(self):
+        return Repo(self.git_dir)
 
     def import_urls_from_file(self, uploaded_file):
         bad_line_urls = []
@@ -126,11 +130,43 @@ class Url(models.Model):
         with open(self.get_full_filepath(), 'wb') as fwrite:
             fwrite.write(data)
 
+    def is_file_untracked(self):
+        repo = self.project.get_repo()
+
+        return self.get_full_filename() in repo.untracked_files
+
+    def is_file_different(self):
+        if self.is_file_untracked():
+            return True
+
+        repo = self.project.get_repo()
+
+        for diff in repo.index.diff(None):
+            if diff.a_path == self.get_full_filename():
+                return True
+
+        return False
+
+    def commit(self, commit_msg):
+        repo = self.project.get_repo()
+        repo.index.add([self.get_full_filename()])
+        repo.index.commit(commit_msg)
+
     def fetch(self):
         resp = self.do_request()
         self.save_into_file(resp.content)
-        self.last_fetched_date = timezone.now()
-        self.save()
+        fetch_date = timezone.now()
+
+        if self.is_file_untracked():
+            commit_msg = 'New URL ({}) is now being tracked'.format(self.url_name)
+            self.commit(commit_msg)
+            self.last_fetched_date = fetch_date
+            self.save()
+        elif self.is_file_different():
+            commit_msg = 'Change detected on {} at {}'.format(self.url_name, fetch_date)
+            self.commit(commit_msg)
+            self.last_fetched_date = fetch_date
+            self.save()
 
         return resp
 
