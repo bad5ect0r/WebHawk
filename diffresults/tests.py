@@ -33,5 +33,3 @@ class UrlTestCase(TestCase):
         url.clean_fields()
 
         self.assertEqual(url.full_url, 'https://www.example.com/test.txt')
-
-
