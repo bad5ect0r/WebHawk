@@ -8,4 +8,3 @@ urlpatterns = [
     path('project/<int:project_id>', views.project, name='project'),
     path('fetch/<int:url_id>', views.fetch, name='fetch')
 ]
-
