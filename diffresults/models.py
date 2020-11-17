@@ -112,6 +112,10 @@ class Url(models.Model):
     def __str__(self):
         return self.full_url
 
+    def save(self, *args, **kwargs):
+        self.fetch()
+        return super(Url, self).save(*args, **kwargs)
+
     def domain(self):
         url_parsed = urlparse(self.full_url)
         return url_parsed.hostname

@@ -62,3 +62,13 @@ class UrlTestCase(TestCase):
         url.last_fetched_date = future_last_fetch
 
         self.assertRaises(ValidationError, url.clean_fields)
+
+    def test_fetch_url_on_save(self):
+        url = create_url('TestMe', 'https://www.example.com/')
+        url.save()
+        content = b''
+
+        with open(url.get_full_filepath(), 'rb') as fread:
+            content = fread.read()
+
+        self.assertIn(b'Example Domain', content)
