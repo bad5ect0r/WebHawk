@@ -1,10 +1,10 @@
 from django.db import models
-from django.core.validators import URLValidator
+from django.core.validators import URLValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.utils import timezone
 
-from . import utils
+from . import utils, validators
 
 from urllib.parse import urlparse
 from pathlib import PosixPath
@@ -86,6 +86,7 @@ class Url(models.Model):
         ('js', 'js'),
         ('html', 'html'),
         ('xml', 'xml'),
+        ('txt', 'txt'),
     }
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
@@ -96,8 +97,17 @@ class Url(models.Model):
     fetch_frequency = models.DurationField('fetch frequency', choices=FETCH_FREQUENCIES, default=DAILY)
     filename = models.UUIDField('filename', editable=False, default=uuid.uuid4)
     file_ext = models.CharField('file extension', choices=FILE_EXTENSIONS, max_length=16, default='txt')
-    add_date = models.DateTimeField('date added', auto_now_add=True)
-    last_fetched_date = models.DateTimeField('date last fetched', null=True, editable=False)
+    add_date = models.DateTimeField(
+        'date added',
+        validators=[validators.date_in_past],
+        auto_now_add=True
+    )
+    last_fetched_date = models.DateTimeField(
+        'date last fetched',
+        null=True,
+        validators=[validators.date_in_past],
+        editable=False
+    )
 
     def __str__(self):
         return self.full_url
