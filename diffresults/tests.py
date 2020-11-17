@@ -6,6 +6,10 @@ from . import models
 
 from uuid import uuid4
 from datetime import timedelta
+from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
+
+import threading
+import time
 
 
 def create_url(project_name, url_text, *args, **kwargs):
@@ -72,3 +76,33 @@ class UrlTestCase(TestCase):
             content = fread.read()
 
         self.assertIn(b'Example Domain', content)
+
+    def test_change_being_tracked(self):
+        test_server_response = b'test1'
+
+        class TestRequestHandler(BaseHTTPRequestHandler):
+            def do_GET(self):
+                self.send_response(200)
+                self.end_headers()
+                self.wfile.write(test_server_response)
+
+        server_address = ('127.0.0.1', 8888)
+        httpd = ThreadingHTTPServer(server_address, TestRequestHandler)
+
+        def start_test_server():
+            httpd.serve_forever()
+
+        daemon1 = threading.Thread(name='daemon1', target=start_test_server)
+        daemon1.start()
+        url = create_url('TestMe', 'http://localhost:8888/')
+        time.sleep(3)
+        url.fetch()
+        test_server_response = b'test2'
+        url.fetch()
+        httpd.shutdown()
+
+        project = models.Project.objects.get(project_name='TestMe')
+        repo = project.get_repo()
+        commit_list = list(repo.iter_commits())
+
+        self.assertEqual(len(commit_list), 2)
