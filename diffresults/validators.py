@@ -6,5 +6,5 @@ def date_in_past(value):
     if value > timezone.now():
         raise ValidationError(
             '%(value) is a date in the future. This is not allowed.',
-            params={'value':str(value)}
+            params={'value': str(value)}
         )

@@ -57,7 +57,7 @@ class UrlTestCase(TestCase):
         self.assertRaises(ValidationError, url.clean_fields)
 
     def test_last_fetch_date_not_in_future(self):
-        future_last_fetch = timezone.now() +  timedelta(days=10)
+        future_last_fetch = timezone.now() + timedelta(days=10)
         url = create_url('TestMe', 'https://www.example.com/')
         url.last_fetched_date = future_last_fetch
 
