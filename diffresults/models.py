@@ -179,6 +179,9 @@ class Url(models.Model):
 
         return resp
 
+    def next_fetch(self):
+        return self.last_fetched_date + self.fetch_frequency
+
 
 class Header(models.Model):
     url = models.ForeignKey(Url, on_delete=models.CASCADE)
