@@ -170,13 +170,12 @@ class Url(models.Model):
         if self.is_file_untracked():
             commit_msg = 'New URL ({}) is now being tracked'.format(self.url_name)
             self.commit(commit_msg)
-            self.last_fetched_date = fetch_date
-            self.save()
         elif self.is_file_different():
             commit_msg = 'Change detected on {} at {}'.format(self.url_name, fetch_date)
             self.commit(commit_msg)
-            self.last_fetched_date = fetch_date
-            self.save()
+
+        self.last_fetched_date = fetch_date
+        self.save()
 
         return resp
 
