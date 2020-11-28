@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_q.apps.DjangoQConfig',
 ]
 
 MIDDLEWARE = [
@@ -134,3 +135,8 @@ GIT_DIR = BASE_DIR / config('GIT_DIR')
 CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', cast=bool)
 SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', cast=bool)
 
+# Django-Q
+Q_CLUSTER = {
+    'name': 'url_fetcher',
+    'orm': 'default'
+}
