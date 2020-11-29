@@ -134,3 +134,6 @@ GIT_DIR = BASE_DIR / config('GIT_DIR')
 CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', cast=bool)
 SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', cast=bool)
 
+# Set Pushover settings as global variables.
+PUSHOVER_API_TOKEN = config('PUSHOVER_API_TOKEN', default=None)
+PUSHOVER_API_USER = config('PUSHOVER_API_USER', default=None)
