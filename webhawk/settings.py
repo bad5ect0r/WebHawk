@@ -123,9 +123,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = config('STATIC_ROOT', default=None)
 
-if len(STATIC_ROOT) == 0:
-    STATIC_ROOT = None
-
 # Custom Settings
 # Git directory to store fetched urls.
 GIT_DIR = BASE_DIR / config('GIT_DIR')
