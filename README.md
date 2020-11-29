@@ -42,7 +42,11 @@ Let me know if you have any issues.
 
 ### Docker
 
-The Dockerfile and docker-compose.yml file is designed to run the Django app in production. Make sure you edit the .env file where appropriate and then run the following command:
+The Dockerfile and docker-compose.yml file is designed to run the Django app in production. Make sure you edit the .env file where appropriate.
+
+You would also need to change the `DJANGO_SUPERUSER_PASSWORD` environment variable in the Dockerfile to ensure that the default password is not used.
+
+Once you've done all that you just need to run the following:
 
 ```
 $ docker-compose up -d --build
