@@ -166,3 +166,4 @@ class UrlTestCase(TestCase):
 class TestPushoverUtil(TestCase):
     def test_simple_message_sent_results_in_status_ok(self):
         response = utils.send_pushover('title', 'message')
+        self.assertEquals(response.status_code, 200)
