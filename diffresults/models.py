@@ -178,6 +178,10 @@ class Url(models.Model):
             self.save()
         elif self.is_file_different():
             commit_msg = 'Change detected on {} at {}'.format(self.url_name, fetch_date)
+            utils.send_pushover(
+                '{}: Change detected!'.format(self.project.project_name),
+                commit_msg
+            )
             self.commit(commit_msg)
             self.last_fetched_date = fetch_date
             self.save()

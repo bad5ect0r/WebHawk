@@ -123,9 +123,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = config('STATIC_ROOT', default=None)
 
-if len(STATIC_ROOT) == 0:
-    STATIC_ROOT = None
-
 # Custom Settings
 # Git directory to store fetched urls.
 GIT_DIR = BASE_DIR / config('GIT_DIR')
@@ -134,3 +131,6 @@ GIT_DIR = BASE_DIR / config('GIT_DIR')
 CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', cast=bool)
 SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', cast=bool)
 
+# Set Pushover settings as global variables.
+PUSHOVER_API_TOKEN = config('PUSHOVER_API_TOKEN', default=None)
+PUSHOVER_API_USER = config('PUSHOVER_API_USER', default=None)

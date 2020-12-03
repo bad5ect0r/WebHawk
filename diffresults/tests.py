@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 
-from . import models
+from . import models, utils
 
 from uuid import uuid4
 from datetime import timedelta
@@ -106,3 +106,11 @@ class UrlTestCase(TestCase):
         commit_list = list(repo.iter_commits())
 
         self.assertEqual(len(commit_list), 2)
+
+
+class TestPushoverUtil(TestCase):
+    def test_simple_message_sent_results_in_status_ok(self):
+        response = utils.send_pushover('title', 'message')
+
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(response.json()['status'], 1)

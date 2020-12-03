@@ -20,6 +20,8 @@ $ pip3 install -r requirements.txt
 
 Next, you need to create a .env file. To do this, you can copy the .env.example file. **Make sure to update your `SECRET_KEY`!**
 
+If you're using Pushover for notifications, you would need to add your secret values for that too. Remember to uncomment it. At the moment you need to use Pushover since we don't have any other method for enabling notifications. In the future we will make this a feature.
+
 Finally, you need to run migrations by doing
 
 ```
