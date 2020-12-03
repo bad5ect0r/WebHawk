@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 
 from . import models, utils
+from django_q.models import Schedule
 
 from uuid import uuid4
 from datetime import timedelta
@@ -107,10 +108,61 @@ class UrlTestCase(TestCase):
 
         self.assertEqual(len(commit_list), 2)
 
+    def test_fetch_updates_last_fetched_date(self):
+        url = create_url('TestMe', 'https://www.example.com')
+        url.save()
+        old_fetch_date = url.last_fetched_date
+        time.sleep(5)
+        url.fetch()
+
+        self.assertNotEqual(url.last_fetched_date, old_fetch_date)
+
+    def test_url_save_creates_scheduled_task(self):
+        url = create_url('TestMe', 'https://www.example.com')
+        url.save()
+        self.assertIsInstance(url.schedule, Schedule)
+
+    def test_url_fetch_frequency_daily_matches_schedule(self):
+        url = create_url('TestMe', 'https://www.example.com', fetch_frequency=models.Url.DAILY)
+        url.save()
+        self.assertEquals(url.schedule.schedule_type, Schedule.DAILY)
+
+    def test_url_fetch_frequency_one_minute_matches_schedule(self):
+        url = create_url('TestMe', 'https://www.example.com', fetch_frequency=models.Url.ONE_MINUTE)
+        url.save()
+        self.assertEquals(url.schedule.schedule_type, Schedule.MINUTES)
+        self.assertEquals(url.schedule.minutes, 1)
+
+    def test_url_fetch_frequency_five_minute_matches_schedule(self):
+        url = create_url('TestMe', 'https://www.example.com', fetch_frequency=models.Url.FIVE_MINUTES)
+        url.save()
+        self.assertEquals(url.schedule.schedule_type, Schedule.MINUTES)
+        self.assertEquals(url.schedule.minutes, 5)
+
+    def test_url_fetch_frequency_half_hourly_matches_schedule(self):
+        url = create_url('TestMe', 'https://www.example.com', fetch_frequency=models.Url.HALF_HOURLY)
+        url.save()
+        self.assertEquals(url.schedule.schedule_type, Schedule.MINUTES)
+        self.assertEquals(url.schedule.minutes, 30)
+
+    def test_url_fetch_frequency_hourly_matches_schedule(self):
+        url = create_url('TestMe', 'https://www.example.com', fetch_frequency=models.Url.HOURLY)
+        url.save()
+        self.assertEquals(url.schedule.schedule_type, Schedule.MINUTES)
+        self.assertEquals(url.schedule.minutes, 60)
+
+    def test_url_fetch_frequency_six_hours_matches_schedule(self):
+        url = create_url('TestMe', 'https://www.example.com', fetch_frequency=models.Url.SIX_HOURS)
+        url.save()
+        self.assertEquals(url.schedule.schedule_type, Schedule.MINUTES)
+        self.assertEquals(url.schedule.minutes, 360)
+
+    def test_url_fetch_frequency_weekly_matches_schedule(self):
+        url = create_url('TestMe', 'https://www.example.com', fetch_frequency=models.Url.WEEKLY)
+        url.save()
+        self.assertEquals(url.schedule.schedule_type, Schedule.WEEKLY)
+
 
 class TestPushoverUtil(TestCase):
     def test_simple_message_sent_results_in_status_ok(self):
         response = utils.send_pushover('title', 'message')
-
-        self.assertEquals(response.status_code, 200)
-        self.assertEquals(response.json()['status'], 1)

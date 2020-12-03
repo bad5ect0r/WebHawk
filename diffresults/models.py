@@ -112,10 +112,6 @@ class Url(models.Model):
     def __str__(self):
         return self.full_url
 
-    def save(self, *args, **kwargs):
-        self.fetch()
-        return super(Url, self).save(*args, **kwargs)
-
     def domain(self):
         url_parsed = urlparse(self.full_url)
         return url_parsed.hostname
@@ -174,8 +170,6 @@ class Url(models.Model):
         if self.is_file_untracked():
             commit_msg = 'New URL ({}) is now being tracked'.format(self.url_name)
             self.commit(commit_msg)
-            self.last_fetched_date = fetch_date
-            self.save()
         elif self.is_file_different():
             commit_msg = 'Change detected on {} at {}'.format(self.url_name, fetch_date)
             utils.send_pushover(
@@ -183,10 +177,14 @@ class Url(models.Model):
                 commit_msg
             )
             self.commit(commit_msg)
-            self.last_fetched_date = fetch_date
-            self.save()
+
+        self.last_fetched_date = fetch_date
+        self.save()
 
         return resp
+
+    def next_fetch(self):
+        return self.last_fetched_date + self.fetch_frequency
 
 
 class Header(models.Model):

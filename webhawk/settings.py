@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_q.apps.DjangoQConfig',
 ]
 
 MIDDLEWARE = [
@@ -108,7 +109,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Australia/Melbourne'
 
 USE_I18N = True
 
@@ -130,6 +131,12 @@ GIT_DIR = BASE_DIR / config('GIT_DIR')
 # Set CSRF_COOKIE and SESSION_COOKIE as secure when in Prod.
 CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', cast=bool)
 SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', cast=bool)
+
+# Django-Q
+Q_CLUSTER = {
+    'name': 'url_fetcher',
+    'orm': 'default'
+}
 
 # Set Pushover settings as global variables.
 PUSHOVER_API_TOKEN = config('PUSHOVER_API_TOKEN', default=None)
