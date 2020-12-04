@@ -35,6 +35,11 @@ class UrlTestCase(TestCase):
 
         self.assertRaises(ValidationError, url.clean_fields)
 
+    def test_unreachable_url_raises_validationerror(self):
+        url = create_url('TestMe', 'http://idontexistidontknowhy.com')
+
+        self.assertRaises(ValidationError, url.clean_fields)
+
     def test_ftp_url_raises_validationerror(self):
         url = create_url('TestMe', 'ftp://www.example.com/test.txt')
 
