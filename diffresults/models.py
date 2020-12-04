@@ -1,5 +1,4 @@
 from django.db import models
-from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.utils import timezone
@@ -92,7 +91,7 @@ class Url(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     url_name = models.CharField('name', max_length=256)
     method = models.CharField('http method', max_length=256, default='GET')
-    full_url = models.CharField(max_length=2048, validators=[URLValidator(['http', 'https']), validators.url_not_reachable])
+    full_url = models.CharField(max_length=2048, validators=[validators.CustomURLValidator(['http', 'https'])])
     body = models.TextField('request body', blank=True, default='')
     fetch_frequency = models.DurationField('fetch frequency', choices=FETCH_FREQUENCIES, default=DAILY)
     filename = models.UUIDField('filename', editable=False, default=uuid.uuid4)
