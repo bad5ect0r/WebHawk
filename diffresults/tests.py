@@ -168,7 +168,6 @@ class UrlTestCase(TestCase):
         self.assertEquals(url.schedule.schedule_type, Schedule.WEEKLY)
 
 
-
 class TestPushoverUtil(TestCase):
     def test_simple_message_sent_results_in_status_ok(self):
         response = utils.send_pushover('title', 'message')
