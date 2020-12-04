@@ -35,6 +35,11 @@ class UrlTestCase(TestCase):
 
         self.assertRaises(ValidationError, url.clean_fields)
 
+    def test_unreachable_url_raises_validationerror(self):
+        url = create_url('TestMe', 'http://idontexistidontknowhy.com')
+
+        self.assertRaises(ValidationError, url.clean_fields)
+
     def test_ftp_url_raises_validationerror(self):
         url = create_url('TestMe', 'ftp://www.example.com/test.txt')
 
@@ -161,6 +166,7 @@ class UrlTestCase(TestCase):
         url = create_url('TestMe', 'https://www.example.com', fetch_frequency=models.Url.WEEKLY)
         url.save()
         self.assertEquals(url.schedule.schedule_type, Schedule.WEEKLY)
+
 
 
 class TestPushoverUtil(TestCase):
