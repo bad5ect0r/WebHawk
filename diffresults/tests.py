@@ -137,12 +137,15 @@ class UrlTestCase(TestCase):
         url = create_url('TestMe', 'https://www.example.com', fetch_frequency=models.Url.DAILY)
         url.save()
         old_minutes = url.schedule.minutes
+        old_next_run = url.schedule.next_run
 
         url.fetch_frequency = models.Url.ONE_MINUTE
         url.save()
         new_minutes = url.schedule.minutes
+        new_next_run = url.schedule.next_run
 
         self.assertNotEqual(new_minutes, old_minutes)
+        self.assertNotEqual(new_next_run, old_next_run)
 
 
 class TestPushoverUtil(TestCase):

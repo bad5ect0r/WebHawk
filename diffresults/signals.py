@@ -25,4 +25,5 @@ def create_scheduled_task(sender, instance, created, **kwargs):
         )
     else:
         instance.schedule.minutes = int(instance.fetch_frequency.total_seconds() / 60)
+        instance.schedule.next_run = instance.next_fetch()
         instance.schedule.save()
