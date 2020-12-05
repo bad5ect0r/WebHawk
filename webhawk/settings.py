@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+from django.core.management.utils import get_random_secret_key
+
 from pathlib import Path
 from decouple import config
 
@@ -23,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = '_97m_fd&o-jk!!9tctipp^tzqcfafwyl)^2wv(p@=4@-f-tm6d'
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = config('SECRET_KEY', default=get_random_secret_key())
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
