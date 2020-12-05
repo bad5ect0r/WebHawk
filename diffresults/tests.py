@@ -133,6 +133,17 @@ class UrlTestCase(TestCase):
         day_minutes = models.Url.DAILY.total_seconds() / 60
         self.assertEquals(url.schedule.minutes, day_minutes)
 
+    def test_url_fetch_frequency_update_updates_schedule(self):
+        url = create_url('TestMe', 'https://www.example.com', fetch_frequency=models.Url.DAILY)
+        url.save()
+        old_minutes = url.schedule.minutes
+
+        url.fetch_frequency = models.Url.ONE_MINUTE
+        url.save()
+        new_minutes = url.schedule.minutes
+
+        self.assertNotEqual(new_minutes, old_minutes)
+
 
 class TestPushoverUtil(TestCase):
     def test_simple_message_sent_results_in_status_ok(self):
