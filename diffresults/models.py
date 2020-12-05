@@ -161,7 +161,7 @@ class Url(models.Model):
         repo.index.add([self.get_full_filename()])
         repo.index.commit(commit_msg)
 
-    def fetch(self):
+    def fetch(self, do_save=True):
         resp = self.do_request()
         self.save_into_file(resp.content)
         fetch_date = timezone.now()
@@ -178,7 +178,9 @@ class Url(models.Model):
             self.commit(commit_msg)
 
         self.last_fetched_date = fetch_date
-        self.save()
+
+        if do_save:
+            self.save()
 
         return resp
 
