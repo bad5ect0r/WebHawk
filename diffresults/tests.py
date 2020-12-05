@@ -127,45 +127,25 @@ class UrlTestCase(TestCase):
         url.save()
         self.assertIsInstance(url.schedule, Schedule)
 
-    def test_url_fetch_frequency_daily_matches_schedule(self):
+    def test_url_fetch_frequency_matches_schedule(self):
         url = create_url('TestMe', 'https://www.example.com', fetch_frequency=models.Url.DAILY)
         url.save()
-        self.assertEquals(url.schedule.schedule_type, Schedule.DAILY)
+        day_minutes = models.Url.DAILY.total_seconds() / 60
+        self.assertEquals(url.schedule.minutes, day_minutes)
 
-    def test_url_fetch_frequency_one_minute_matches_schedule(self):
-        url = create_url('TestMe', 'https://www.example.com', fetch_frequency=models.Url.ONE_MINUTE)
+    def test_url_fetch_frequency_update_updates_schedule(self):
+        url = create_url('TestMe', 'https://www.example.com', fetch_frequency=models.Url.DAILY)
         url.save()
-        self.assertEquals(url.schedule.schedule_type, Schedule.MINUTES)
-        self.assertEquals(url.schedule.minutes, 1)
+        old_minutes = url.schedule.minutes
+        old_next_run = url.schedule.next_run
 
-    def test_url_fetch_frequency_five_minute_matches_schedule(self):
-        url = create_url('TestMe', 'https://www.example.com', fetch_frequency=models.Url.FIVE_MINUTES)
+        url.fetch_frequency = models.Url.ONE_MINUTE
         url.save()
-        self.assertEquals(url.schedule.schedule_type, Schedule.MINUTES)
-        self.assertEquals(url.schedule.minutes, 5)
+        new_minutes = url.schedule.minutes
+        new_next_run = url.schedule.next_run
 
-    def test_url_fetch_frequency_half_hourly_matches_schedule(self):
-        url = create_url('TestMe', 'https://www.example.com', fetch_frequency=models.Url.HALF_HOURLY)
-        url.save()
-        self.assertEquals(url.schedule.schedule_type, Schedule.MINUTES)
-        self.assertEquals(url.schedule.minutes, 30)
-
-    def test_url_fetch_frequency_hourly_matches_schedule(self):
-        url = create_url('TestMe', 'https://www.example.com', fetch_frequency=models.Url.HOURLY)
-        url.save()
-        self.assertEquals(url.schedule.schedule_type, Schedule.MINUTES)
-        self.assertEquals(url.schedule.minutes, 60)
-
-    def test_url_fetch_frequency_six_hours_matches_schedule(self):
-        url = create_url('TestMe', 'https://www.example.com', fetch_frequency=models.Url.SIX_HOURS)
-        url.save()
-        self.assertEquals(url.schedule.schedule_type, Schedule.MINUTES)
-        self.assertEquals(url.schedule.minutes, 360)
-
-    def test_url_fetch_frequency_weekly_matches_schedule(self):
-        url = create_url('TestMe', 'https://www.example.com', fetch_frequency=models.Url.WEEKLY)
-        url.save()
-        self.assertEquals(url.schedule.schedule_type, Schedule.WEEKLY)
+        self.assertNotEqual(new_minutes, old_minutes)
+        self.assertNotEqual(new_next_run, old_next_run)
 
 
 class TestPushoverUtil(TestCase):

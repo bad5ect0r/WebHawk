@@ -7,6 +7,9 @@
 # Ignore GitDir
 GitDir
 
+# Ignore clean.sh
+clean.sh
+
 # Other files I got from somewhere on the Internet.
 # Django #
 *.log
