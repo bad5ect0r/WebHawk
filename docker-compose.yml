@@ -8,6 +8,10 @@ services:
             - static_volume:/static
         expose:
             - 8000
+        build:
+            context: .
+            args:
+                DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD}
     nginx:
         image: nginx:1.19
         container_name: nginx
