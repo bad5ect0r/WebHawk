@@ -2,7 +2,10 @@ version: '3'
 
 services:
     webhawk:
-        build: .
+        build:
+            context: .
+            args:
+                DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD}
         container_name: webhawk
         volumes:
             - static_volume:/static
