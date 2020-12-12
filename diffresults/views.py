@@ -1,24 +1,20 @@
 from django.shortcuts import render, get_object_or_404
+from django.views import generic
 
 from . import models
 
 
-def index(request):
-    projects = models.Project.objects.all()
+class MainDashboard(generic.ListView):
+    template_name = 'diffresults/index.html'
+    context_object_name = 'projects'
 
-    return render(request, 'diffresults/index.html', {
-        'projects': projects
-    })
+    def get_queryset(self):
+        return models.Project.objects.all()
 
 
-def project(request, project_id):
-    project = get_object_or_404(models.Project, pk=project_id)
-    urls = project.url_set.all()
-
-    return render(request, 'diffresults/project.html', {
-        'project': project,
-        'urls': urls
-    })
+class ProjectDashboard(generic.DetailView):
+    model = models.Project
+    template_name = 'diffresults/project.html'
 
 
 def fetch(request, url_id):

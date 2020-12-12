@@ -4,7 +4,7 @@ from . import views
 
 app_name = 'diffresults'
 urlpatterns = [
-    path('', views.index, name='index'),
-    path('project/<int:project_id>', views.project, name='project'),
-    path('fetch/<int:url_id>', views.fetch, name='fetch')
+    path('', views.MainDashboard.as_view(), name='main'),
+    path('project/<int:pk>', views.ProjectDashboard.as_view(), name='project'),
+    path('fetch/<int:pk>', views.fetch, name='fetch')
 ]
