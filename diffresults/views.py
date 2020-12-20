@@ -17,8 +17,8 @@ class ProjectDashboard(generic.DetailView):
     template_name = 'diffresults/project.html'
 
 
-def fetch(request, url_id):
-    url = get_object_or_404(models.Url, pk=url_id)
+def fetch(request, pk):
+    url = get_object_or_404(models.Url, pk=pk)
     resp = url.fetch()
 
     return render(request, 'diffresults/fetch.html', {
