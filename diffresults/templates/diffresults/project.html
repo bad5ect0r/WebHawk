@@ -1,12 +1,38 @@
-<html>
-	<body>
-		<h1>{{ project.project_name }}</h1>
-		<ul>
-			{% for url in project.url_set.all %}
-			<li>
-				<a href="{% url 'diffresults:fetch' url.id %}">{{ url.url_name }} ({{ url.full_url }})</a>
-			</li>
-			{% endfor %}
-		</ul>
-	</body>
-</html>
+{% extends 'diffresults/base.html' %}
+
+{% block title %}WebHawk | {{ project.project_name }}{% endblock %}
+
+{% block content %}
+<section class="text-center container py-3">
+	<div class="row">
+		<div class="col-lg-6 mx-auto">
+			<h1>{{ project.project_name }}</h1>
+			<p class="lead">This project has the following urls saved.</p>
+		</div>
+	</div>
+</section>
+<div class="container">
+	<table class="table">
+		<thead>
+			<th>Name</th>
+			<th>Full URL</th>
+			<th>Date Added</th>
+			<th>Date Last Fetched</th>
+		</thead>
+		<tbody>
+		{% for project_url in project.url_set.all %}
+			<tr>
+				<td>
+					<a href="{% url 'diffresults:fetch' project_url.id %}">{{ project_url.url_name }}</a>
+				</td>
+				<td>
+					<a href="{{ project_url.full_url }}">{{ project_url.full_url }}</a>
+				</td>
+				<td>{{ project_url.add_date }}</td>
+				<td>{{ project_url.last_fetched_date }}</td>
+			</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endblock %}
