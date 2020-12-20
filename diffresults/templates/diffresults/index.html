@@ -1,12 +1,35 @@
-<html>
-	<body>
-		<h1>Projects</h1>
-		<ul>
-			{% for project in projects %}
-			<li>
-				<a href="{% url 'diffresults:project' project.id %}">{{ project.project_name }}</a>
-			</li>
-			{% endfor %}
-		</ul>
-	</body>
-</html>
+{% extends 'diffresults/base.html' %}
+
+{% block title %}WebHawk | Main Dashboard{% endblock %}
+
+{% block content %}
+<section class="text-center container py-3">
+	<div class="row">
+		<div class="col-lg-6 mx-auto">
+			<h1>Projects</h1>
+			<p class="lead">Select a project to continue.</p>
+		</div>
+	</div>
+</section>
+<div class="container">
+	<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+	{% for project in projects %}
+		<div class="col">
+			<div class="card">
+				<div class="card-body">
+					<h5 class="card-title">{{ project.project_name }}</h5>
+					<ul class="card-text">
+					{% for top_url in project.url_set.all|slice:':3' %}
+						<li>
+							<a href="{% url 'diffresults:fetch' top_url.id %}">{{ top_url.url_name }}</a>
+						</li>
+					{% endfor %}
+					</ul>
+					<a href="{% url 'diffresults:project' project.id %}" class="btn btn-primary">View Project</a>
+				</div>
+			</div>
+		</div>
+	{% endfor %}
+	</div>
+</div>
+{% endblock %}

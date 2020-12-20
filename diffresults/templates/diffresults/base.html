@@ -1,0 +1,18 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>{% block title %}{% endblock %}</title>
+		<link href="{% static 'diffresults/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+	</head>
+	<body>
+		<header>
+			<nav class="navbar navbar-dark navbar-expand-lg bg-dark">
+				<a class="navbar-brand" href="{% url 'diffresults:main' %}">WebHawk</a>
+			</nav>
+		</header>
+		{% block content %}{% endblock %}
+		<script src="{% static 'diffresults/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+	</body>
+</html>

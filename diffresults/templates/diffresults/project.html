@@ -2,7 +2,7 @@
 	<body>
 		<h1>{{ project.project_name }}</h1>
 		<ul>
-			{% for url in urls %}
+			{% for url in project.url_set.all %}
 			<li>
 				<a href="{% url 'diffresults:fetch' url.id %}">{{ url.url_name }} ({{ url.full_url }})</a>
 			</li>
