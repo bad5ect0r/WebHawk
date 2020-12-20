@@ -14,6 +14,7 @@ class MainDashboard(generic.ListView):
 
 class ProjectDashboard(generic.DetailView):
     model = models.Project
+    context_object_name = 'project'
     template_name = 'diffresults/project.html'
 
 
