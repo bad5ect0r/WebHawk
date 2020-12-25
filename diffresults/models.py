@@ -187,6 +187,12 @@ class Url(models.Model):
     def next_fetch(self):
         return self.last_fetched_date + self.fetch_frequency
 
+    def get_commits(self):
+        repo = self.project.get_repo()
+        commits = list(repo.iter_commits('master'))
+
+        return list(filter(lambda x: self.get_full_filename() in x.stats.files, commits))
+
 
 class Header(models.Model):
     url = models.ForeignKey(Url, on_delete=models.CASCADE)
