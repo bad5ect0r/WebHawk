@@ -189,7 +189,7 @@ class Url(models.Model):
 
     def get_commits(self):
         repo = self.project.get_repo()
-        commits = list(repo.iter_commits('master'))
+        commits = repo.iter_commits('master')
 
         return list(filter(lambda x: self.get_full_filename() in x.stats.files, commits))
 
