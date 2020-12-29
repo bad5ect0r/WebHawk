@@ -192,6 +192,15 @@ class Url(models.Model):
         commits = repo.iter_commits('master')
 
         return list(filter(lambda x: self.get_full_filename() in x.stats.files, commits))
+    
+    def get_diff(self, commit_a, commit_b, u=16):
+        commits = self.get_commits()
+        assert u > 0
+        assert commit_a in commits
+        assert commit_b in commits
+
+        repo = self.project.get_repo()
+        return repo.git.diff(commit_a, commit_b, '-U{}'.format(u))
 
 
 class Header(models.Model):
