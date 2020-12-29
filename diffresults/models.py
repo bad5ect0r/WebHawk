@@ -201,7 +201,7 @@ class Url(models.Model):
 
         repo = self.project.get_repo()
         return repo.git.diff(commit_a, commit_b, '-U{}'.format(u))
-    
+
     def get_commit_from_sha(self, sha):
         commits = self.get_commits()
 
