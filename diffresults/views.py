@@ -34,7 +34,7 @@ class UrlDashboard(generic.DetailView):
                 commit_a = list(filter(lambda x: x.hexsha == commit_a, commits))[0]
                 commit_b = list(filter(lambda x: x.hexsha == commit_b, commits))[0]
                 diff = url.get_diff(commit_a, commit_b)
-        
+
         return render(request, 'diffresults/url.html', {
             'url': url,
             'commits': commits,
