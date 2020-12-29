@@ -30,15 +30,16 @@ class UrlDashboard(generic.DetailView):
 
         if len(commits) > 1:
             if commit_a is None or commit_b is None:
-                diff = url.get_diff(commits[1], commits[0])
+                commit_a = commits[1]
+                commit_b = commits[0]
             else:
                 commit_a = url.get_commit_from_sha(commit_a)
                 commit_b = url.get_commit_from_sha(commit_b)
 
-                if commit_a is not None and commit_b is not None:
-                    diff = url.get_diff(commit_a, commit_b)
-                else:
-                    raise Http404('Invalid commit hashes.')
+            if commit_a is not None and commit_b is not None:
+                diff = url.get_diff(commit_a, commit_b)
+            else:
+                raise Http404('Invalid commit hashes.')
 
         return render(request, 'diffresults/url.html', {
             'url': url,
