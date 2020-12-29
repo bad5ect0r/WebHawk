@@ -21,7 +21,7 @@
 					<ul class="card-text">
 					{% for top_url in project.url_set.all|slice:':3' %}
 						<li>
-							<a href="{% url 'diffresults:fetch' top_url.id %}">{{ top_url.url_name }}</a>
+							<a href="{% url 'diffresults:url' top_url.id %}">{{ top_url.url_name }}</a>
 						</li>
 					{% endfor %}
 					</ul>
