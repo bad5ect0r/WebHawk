@@ -27,7 +27,11 @@
 				<label for="before">Before commit date</label>
 				<select id="before" name="before" class="form-control">
 				{% for commit in commits %}
+					{% if commit == commit_a %}
+					<option value="{{ commit.hexsha }}" selected>{{ commit.committed_datetime }}</option>
+					{% else %}
 					<option value="{{ commit.hexsha }}">{{ commit.committed_datetime }}</option>
+					{% endif %}
 				{% endfor %}
 				</select>
 			</div>
@@ -35,7 +39,11 @@
 				<label for="after">After commit date</label>
 				<select id="after" name="after" class="form-control">
 				{% for commit in url.get_commits %}
+					{% if commit == commit_b %}
+					<option value="{{ commit.hexsha }}" selected>{{ commit.committed_datetime }}</option>
+					{% else %}
 					<option value="{{ commit.hexsha }}">{{ commit.committed_datetime }}</option>
+					{% endif %}
 				{% endfor %}
 				</select>
 			</div>

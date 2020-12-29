@@ -43,7 +43,9 @@ class UrlDashboard(generic.DetailView):
         return render(request, 'diffresults/url.html', {
             'url': url,
             'commits': commits,
-            'diff': diff
+            'diff': diff,
+            'commit_a': commit_a,
+            'commit_b': commit_b
         })
 
     def post(self, request, pk, commit_a=None, commit_b=None):
