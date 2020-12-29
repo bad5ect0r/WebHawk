@@ -1,0 +1,67 @@
+{% extends 'diffresults/base.html' %}
+
+{% block title %}WebHawk | {{ url.url_name }}{% endblock %}
+
+{% block resources %}
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/diff2html/bundles/css/diff2html.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/github.min.css" />
+{% endblock %}
+
+{% block content %}
+<pre id="diff-content" hidden>
+{{ diff }}
+</pre>
+<section class="text-center container py-3">
+	<div class="row">
+		<div class="col-lg-6 mx-auto">
+			<h1>{{ url.url_name }}</h1>
+			<p class="lead">This URL has <b>{{ commits|length }} updates</b>.</p>
+		</div>
+	</div>
+</section>
+<div class="container">
+	<form method="POST" action="">
+		{% csrf_token %}
+		<div class="row">
+			<div class="form-group col">
+				<label for="before">Before commit date</label>
+				<select id="before" name="before" class="form-control">
+				{% for commit in commits %}
+					<option value="{{ commit.hexsha }}">{{ commit.committed_datetime }}</option>
+				{% endfor %}
+				</select>
+			</div>
+			<div class="form-group col">
+				<label for="after">After commit date</label>
+				<select id="after" name="after" class="form-control">
+				{% for commit in url.get_commits %}
+					<option value="{{ commit.hexsha }}">{{ commit.committed_datetime }}</option>
+				{% endfor %}
+				</select>
+			</div>
+		</div>
+		<button type="submit" class="btn btn-primary mt-3 mb-3">Go</button>
+	</form>
+	<div class="row">
+		<div class="col-sm">
+			<div id="destination-elem-id"></div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/diff2html/bundles/js/diff2html.min.js"></script>
+<script>
+	document.addEventListener('DOMContentLoaded', () => {
+		let diffStr = document.getElementById('diff-content').innerText;
+		const config = {
+			outputFormat: 'side-by-side',
+			drawFileList: false,
+			matching: 'words'
+		};
+		var diffHtml = Diff2Html.html(diffStr, config);
+		document.getElementById('destination-elem-id').innerHTML = diffHtml;
+	});
+</script>
+{% endblock %}
