@@ -93,7 +93,7 @@ class UrlTestCase(TestCase):
                 self.end_headers()
                 self.wfile.write(test_server_response)
 
-        server_address = ('127.0.0.1', 8888)
+        server_address = ('127.0.0.1', 8891)
         httpd = ThreadingHTTPServer(server_address, TestRequestHandler)
 
         def start_test_server():
@@ -101,7 +101,7 @@ class UrlTestCase(TestCase):
 
         daemon1 = threading.Thread(name='daemon1', target=start_test_server)
         daemon1.start()
-        url = create_url('TestMe', 'http://localhost:8888/')
+        url = create_url('TestMe', 'http://localhost:8891/')
         time.sleep(3)
         url.fetch()
         test_server_response = b'test2'
@@ -157,7 +157,7 @@ class UrlTestCase(TestCase):
                 self.end_headers()
                 self.wfile.write(test_server_response)
 
-        server_address = ('127.0.0.1', 8888)
+        server_address = ('127.0.0.1', 8898)
         httpd = ThreadingHTTPServer(server_address, TestRequestHandler)
 
         def start_test_server():
@@ -166,7 +166,7 @@ class UrlTestCase(TestCase):
         daemon1 = threading.Thread(name='daemon1', target=start_test_server)
         daemon1.start()
 
-        url = create_url('TestMe', 'http://localhost:8888/', fetch_frequency=models.Url.DAILY)
+        url = create_url('TestMe', 'http://localhost:8898/', fetch_frequency=models.Url.DAILY)
         url.save()
         url.fetch()
         test_server_response = b'test2'
@@ -188,7 +188,7 @@ class UrlTestCase(TestCase):
                 self.end_headers()
                 self.wfile.write(test_server_response)
 
-        server_address = ('127.0.0.1', 8888)
+        server_address = ('127.0.0.1', 8894)
         httpd = ThreadingHTTPServer(server_address, TestRequestHandler)
 
         def start_test_server():
@@ -197,7 +197,7 @@ class UrlTestCase(TestCase):
         daemon1 = threading.Thread(name='daemon1', target=start_test_server)
         daemon1.start()
 
-        url = create_url('TestMe', 'http://localhost:8888/', fetch_frequency=models.Url.DAILY)
+        url = create_url('TestMe', 'http://localhost:8894/', fetch_frequency=models.Url.DAILY)
         url.save()
         url.fetch()
         test_server_response = b'test2'
@@ -219,7 +219,7 @@ class UrlTestCase(TestCase):
                 self.end_headers()
                 self.wfile.write(test_server_response)
 
-        server_address = ('127.0.0.1', 8888)
+        server_address = ('127.0.0.1', 8892)
         httpd = ThreadingHTTPServer(server_address, TestRequestHandler)
 
         def start_test_server():
@@ -228,11 +228,11 @@ class UrlTestCase(TestCase):
         daemon1 = threading.Thread(name='daemon1', target=start_test_server)
         daemon1.start()
 
-        url1 = create_url('TestMe', 'http://localhost:8888/', fetch_frequency=models.Url.DAILY)
+        url1 = create_url('TestMe', 'http://localhost:8892/', fetch_frequency=models.Url.DAILY)
         url1.save()
         url1.fetch()
         commits1 = url1.get_commits()
-        url2 = create_url('TestMe', 'http://localhost:8888/', fetch_frequency=models.Url.DAILY)
+        url2 = create_url('TestMe', 'http://localhost:8892/', fetch_frequency=models.Url.DAILY)
         url2.save()
         url2.fetch()
         commits2 = url2.get_commits()
