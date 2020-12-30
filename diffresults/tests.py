@@ -1,6 +1,7 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from django.urls import reverse
 
 from . import models, utils
 from django_q.models import Schedule
@@ -256,6 +257,66 @@ class UrlTestCase(TestCase):
         test_commit = url.get_commit_from_sha(wrong_sha)
 
         self.assertIs(test_commit, None)
+
+
+class TestUrlDashboard(TestCase):
+    def setUp(self):
+        models.Project.objects.create(project_name='TestMyView')
+
+    def test_get_one_commit(self):
+        client = Client()
+        url = create_url('TestMyView', 'https://www.example.com/')
+        url.save()
+        response = client.get(reverse('diffresults:url', args=(url.pk,)))
+
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(len(response.context['diff']), 0)
+        self.assertEquals(len(response.context['commits']), 1)
+
+    def test_get_nonexisting_url(self):
+        client = Client()
+        response = client.get(reverse('diffresults:url', args=(99999,)))
+
+        self.assertEquals(response.status_code, 404)
+
+    def test_get_invalid_hashes(self):
+        test_server_response = b'test1'
+
+        class TestRequestHandler(BaseHTTPRequestHandler):
+            def do_GET(self):
+                self.send_response(200)
+                self.end_headers()
+                self.wfile.write(test_server_response)
+
+        server_address = ('127.0.0.1', 8989)
+        httpd = ThreadingHTTPServer(server_address, TestRequestHandler)
+
+        def start_test_server():
+            httpd.serve_forever()
+
+        daemon1 = threading.Thread(name='daemon1', target=start_test_server)
+        daemon1.start()
+
+        url = create_url('TestMyView', 'http://localhost:8989/')
+        url.save()
+        url.fetch()
+        test_server_response = b'test2'
+        url.fetch()
+        httpd.shutdown()
+
+        client = Client()
+        pk = url.id
+        commits = url.get_commits()
+        good_sha = commits[0].hexsha
+        bad_sha = '2fd4e1c67a2d28fced849ee1bb76e7391b93eb12'
+        response1 = client.get(reverse('diffresults:url-with-args', args=(pk, bad_sha, good_sha)))
+        response2 = client.get(reverse('diffresults:url-with-args', args=(pk, good_sha, bad_sha)))
+        response3 = client.get(reverse('diffresults:url-with-args', args=(pk, bad_sha, bad_sha)))
+        response4 = client.get(reverse('diffresults:url-with-args', args=(pk, '2fdkkk', bad_sha)))
+        self.assertEquals(response1.status_code, 404)
+        self.assertEquals(response2.status_code, 404)
+        self.assertEquals(response3.status_code, 404)
+        self.assertEquals(response4.status_code, 404)
 
 
 class TestPushoverUtil(TestCase):
