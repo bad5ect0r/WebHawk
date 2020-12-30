@@ -147,6 +147,37 @@ class UrlTestCase(TestCase):
         self.assertNotEqual(new_minutes, old_minutes)
         self.assertNotEqual(new_next_run, old_next_run)
 
+    def test_url_get_commits(self):
+        test_server_response = b'test1'
+
+        class TestRequestHandler(BaseHTTPRequestHandler):
+            def do_GET(self):
+                self.send_response(200)
+                self.end_headers()
+                self.wfile.write(test_server_response)
+
+        server_address = ('127.0.0.1', 8888)
+        httpd = ThreadingHTTPServer(server_address, TestRequestHandler)
+
+        def start_test_server():
+            httpd.serve_forever()
+
+        daemon1 = threading.Thread(name='daemon1', target=start_test_server)
+        daemon1.start()
+
+        url = create_url('TestMe', 'http://localhost:8888/', fetch_frequency=models.Url.DAILY)
+        url.save()
+        url.fetch()
+        test_server_response = b'test2'
+        url.fetch()
+
+        self.assertEqual(len(url.get_commits()), 2)
+        test_server_response = b'test3'
+        url.fetch()
+        self.assertEqual(len(url.get_commits()), 3)
+
+        httpd.shutdown()
+
 
 class TestPushoverUtil(TestCase):
     def test_simple_message_sent_results_in_status_ok(self):
