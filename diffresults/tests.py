@@ -178,6 +178,37 @@ class UrlTestCase(TestCase):
 
         httpd.shutdown()
 
+    def test_url_get_diff(self):
+        test_server_response = b'test1'
+
+        class TestRequestHandler(BaseHTTPRequestHandler):
+            def do_GET(self):
+                self.send_response(200)
+                self.end_headers()
+                self.wfile.write(test_server_response)
+
+        server_address = ('127.0.0.1', 8888)
+        httpd = ThreadingHTTPServer(server_address, TestRequestHandler)
+
+        def start_test_server():
+            httpd.serve_forever()
+
+        daemon1 = threading.Thread(name='daemon1', target=start_test_server)
+        daemon1.start()
+
+        url = create_url('TestMe', 'http://localhost:8888/', fetch_frequency=models.Url.DAILY)
+        url.save()
+        url.fetch()
+        test_server_response = b'test2'
+        url.fetch()
+        httpd.shutdown()
+
+        commits = url.get_commits()
+        diff = url.get_diff(commits[1], commits[0])
+
+        self.assertIn('+test2', diff)
+        self.assertIn('-test1', diff)
+
 
 class TestPushoverUtil(TestCase):
     def test_simple_message_sent_results_in_status_ok(self):
