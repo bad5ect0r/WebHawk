@@ -239,6 +239,25 @@ class UrlTestCase(TestCase):
 
         self.assertRaises(AssertionError, url1.get_diff, commits2[0], commits1[0])
 
+    def test_url_get_commit_from_sha_good(self):
+        url = create_url('TestMe', 'https://www.example.com/')
+        url.save()
+        url.fetch()
+        commit = url.get_commits()[0]
+        test_commit = url.get_commit_from_sha(commit.hexsha)
+
+        self.assertEqual(commit, test_commit)
+
+    def test_url_get_commit_from_sha_wrong_sha(self):
+        url = create_url('TestMe', 'https://www.example.com/')
+        url.save()
+        url.fetch()
+        wrong_sha = '2fd4e1c67a2d28fced849ee1bb76e7391b93eb12'
+        test_commit = url.get_commit_from_sha(wrong_sha)
+
+        self.assertIs(test_commit, None)
+
+
 class TestPushoverUtil(TestCase):
     def test_simple_message_sent_results_in_status_ok(self):
         response = utils.send_pushover('title', 'message')
