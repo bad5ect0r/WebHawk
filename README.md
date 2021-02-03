@@ -1,7 +1,6 @@
-# WebHawk [DEV]
+# WebHawk
 
 An asset monitoring web application. A fun project of mine just to polish up on my Python/Django skills.
-**The project is not complete yet so don't expect it to work.**
 
 ## How to
 
