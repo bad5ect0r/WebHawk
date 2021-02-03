@@ -187,6 +187,30 @@ class Url(models.Model):
     def next_fetch(self):
         return self.last_fetched_date + self.fetch_frequency
 
+    def get_commits(self):
+        repo = self.project.get_repo()
+        commits = repo.iter_commits('master')
+
+        return list(filter(lambda x: self.get_full_filename() in x.stats.files, commits))
+
+    def get_diff(self, commit_a, commit_b, u=16):
+        commits = self.get_commits()
+        assert u > 0
+        assert commit_a in commits
+        assert commit_b in commits
+
+        repo = self.project.get_repo()
+        return repo.git.diff(commit_a, commit_b, '-U{}'.format(u))
+
+    def get_commit_from_sha(self, sha):
+        commits = self.get_commits()
+
+        for commit in commits:
+            if commit.hexsha == sha:
+                return commit
+
+        return None
+
 
 class Header(models.Model):
     url = models.ForeignKey(Url, on_delete=models.CASCADE)

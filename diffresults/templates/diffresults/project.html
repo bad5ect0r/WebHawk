@@ -23,7 +23,7 @@
 		{% for project_url in project.url_set.all %}
 			<tr>
 				<td>
-					<a href="{% url 'diffresults:fetch' project_url.id %}">{{ project_url.url_name }}</a>
+					<a href="{% url 'diffresults:url' project_url.id %}">{{ project_url.url_name }}</a>
 				</td>
 				<td>
 					<a href="{{ project_url.full_url }}">{{ project_url.full_url }}</a>

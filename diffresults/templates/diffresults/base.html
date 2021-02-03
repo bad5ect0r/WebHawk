@@ -4,6 +4,7 @@
 	<head>
 		<title>{% block title %}{% endblock %}</title>
 		<link href="{% static 'diffresults/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+		{% block resources %}{% endblock %}
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 	</head>
 	<body>
@@ -14,5 +15,6 @@
 		</header>
 		{% block content %}{% endblock %}
 		<script src="{% static 'diffresults/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+		{% block scripts %}{% endblock %}
 	</body>
 </html>
